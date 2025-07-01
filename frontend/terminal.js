@@ -1,18 +1,37 @@
-const term = new Terminal();
-term.open(document.getElementById('terminal'));
+let token = null;
+let socket = null;
 
-const socket = new WebSocket("ws://localhost:8000");
+function login() {
+  const u = document.getElementById("username").value;
+  const p = document.getElementById("password").value;
 
-socket.onopen = () => {
-  term.focus();
-  term.write("Connected to WebShell\r\n");
-  console.log('connect to web shell')
-};
+  // Simulate login (use localStorage for now)
+  if (u === "admin" && p === "password") {
+    token = btoa(`${u}:${p}`);
+    localStorage.setItem("token", token);
+    document.getElementById("login").style.display = "none";
+    startTerminal();
+  } else {
+    alert("Invalid credentials");
+  }
+}
 
-socket.onmessage = (event) => {
-  term.write(event.data);
-};
+function startTerminal() {
+  const term = new Terminal();
+  term.open(document.getElementById('terminal'));
 
-term.onData(data => {
-  socket.send(data);
-});
+  socket = new WebSocket("ws://localhost:8000?token=" + token);
+
+  socket.onopen = () => {
+    term.focus();
+    term.write("Connected to WebShell\r\n");
+  };
+
+  socket.onmessage = (event) => {
+    term.write(event.data);
+  };
+
+  term.onData(data => {
+    socket.send(data);
+  });
+}

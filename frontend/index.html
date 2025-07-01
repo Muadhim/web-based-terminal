@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <title>Web Terminal</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       height: 100%;
-      background: black;
     }
+
     #terminal {
       width: 100%;
       height: 100%;
     }
+
+    #login {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: #222;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      gap: 5px;
+    }
   </style>
 </head>
+
 <body>
+  <div id="login">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
   <div id="terminal"></div>
-    <p >halo</p>
   <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.min.js"></script>
   <script src="terminal.js"></script>
 </body>
+
 </html>
