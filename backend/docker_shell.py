@@ -2,33 +2,38 @@ import docker
 import threading
 import queue
 
+from container_manager import ContainerManager
+
 client = docker.from_env()
 
 
 class DockerShellSession:
     def __init__(self, username):
         self.username = username
-        self.container = client.containers.run(
-            "ubuntu:20.04",
-            # command=f"/bin/bash -c \"useradd -m {username} && su - {username}\"",
-            command="/bin/bash",
-            stdin_open=True,
-            tty=True,
-            detach=True,
-            remove=True,  # auto-delete on exit
-            # network_mode="none",  # no internet
-            # user="1000:1000", # do no user this for now  # non-root 
-            # cap_drop=["ALL"],  # drop all linux capabilities
-            # cap_add=["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE", "FOWNER", "KILL"],
-            # read_only=True, # prevent modification of the container FS
-            tmpfs={"/tmp": "", "/home": ""},  # add writabe mounts for /temp, /home
-            # limit resources
-            mem_limit="128m",
-            cpu_period=100000,
-            cpu_quota=50000, # = 0.5 cpu core
-            security_opt=["seccomp=unconfined"]  # Replace with your custom seccomp later
+        # self.container = client.containers.run(
+        #     "ubuntu:20.04",
+        #     # command=f"/bin/bash -c \"useradd -m {username} && su - {username}\"",
+        #     command="/bin/bash",
+        #     stdin_open=True,
+        #     tty=True,
+        #     detach=True,
+        #     remove=True,  # auto-delete on exit
+        #     # network_mode="none",  # no internet
+        #     # user="1000:1000", # do no user this for now  # non-root 
+        #     # cap_drop=["ALL"],  # drop all linux capabilities
+        #     # cap_add=["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE", "FOWNER", "KILL"],
+        #     # read_only=True, # prevent modification of the container FS
+        #     tmpfs={"/tmp": "", "/home": ""},  # add writabe mounts for /temp, /home
+        #     # limit resources
+        #     mem_limit="128m",
+        #     cpu_period=100000,
+        #     cpu_quota=50000, # = 0.5 cpu core
+        #     security_opt=["seccomp=unconfined"]  # Replace with your custom seccomp later
+        # )
 
-        )
+        manager = ContainerManager()
+        self.container = manager.get_or_create_container(username)
+        print("container: ", self.container)
 
         #attach to the container's stdin/stdout
         # self.sock = self.container.attach_socket(
