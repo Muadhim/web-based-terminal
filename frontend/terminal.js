@@ -25,11 +25,16 @@ function startTerminal() {
   socket.onopen = () => {
     term.focus();
     term.write("Connected to WebShell\r\n");
+    console.info("Connected to Websocket")
   };
 
   socket.onmessage = (event) => {
     term.write(event.data);
   };
+
+  socket.onclose = () => {
+    console.info("Websocket disconnected")
+  }
 
   term.onData(data => {
     socket.send(data);

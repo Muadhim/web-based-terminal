@@ -2,13 +2,13 @@ import asyncio
 import websockets
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
-from user_session import add_session, remove_session, is_valid_token
 import urllib.parse
 from datetime import datetime
+from user_session import add_session, remove_session, is_valid_token
+from docker_shell import DockerShellSession
+from config import PORT
 
-from shell_manager import ShellSession
-from config import PORT, SHELL
+sys.path.append(os.path.dirname(__file__))
 
 async def handle_terminal(websocket, path):
     parsed = urllib.parse.urlparse(path)
@@ -29,7 +29,7 @@ async def handle_terminal(websocket, path):
     logfile = f"logs/{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
     os.makedirs("logs", exist_ok=True)
 
-    shell = ShellSession(shell_path=SHELL)
+    shell = DockerShellSession(username)
 
     async def read_from_shell():
         while True:
